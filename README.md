@@ -1,3 +1,6 @@
+[![View Site](https://img.shields.io/badge/Live_Site-Visit-blue)](https://ardriaxv.github.io/ED-Coriolis-Analyzer/)
+
+
 # Elite Dangerous Build Tool (Coriolis JSON Powered)
 
 A lightweight, browser based tool for analysing **Elite Dangerous** ship builds using **Coriolis.io JSON exports**.  
