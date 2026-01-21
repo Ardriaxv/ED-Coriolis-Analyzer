@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ED Build Tool (Coriolis JSON)</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#050810; color:#eee; margin:0; padding:20px; }
+    h1, h2 { color:#6ec1ff; }
+    .section { border:1px solid #333; padding:15px; margin-bottom:15px; border-radius:6px; background:#0b101a; }
+    label { display:block; margin-top:8px; }
+    input, textarea { width:100%; padding:6px; margin-top:4px; background:#111827; color:#eee; border:1px solid #333; border-radius:4px; }
+    button { margin-top:10px; padding:8px 14px; border:none; border-radius:4px; background:#1f6feb; color:#fff; cursor:pointer; }
+    button:hover { background:#2f81f7; }
+    .result { margin-top:10px; padding:10px; background:#050b14; border-radius:4px; white-space:pre-wrap; }
+  </style>
+</head>
+<body>
+
+<h1>Elite Dangerous Build Tool</h1>
+
+<!-- CORIOLIS JSON IMPORT -->
+<div class="section">
+  <h2>Paste Coriolis JSON</h2>
+  <textarea id="coriolisJson" rows="8" placeholder="Paste Coriolis JSON here"></textarea>
+  <button onclick="importCoriolis()">Add New Build</button>
+  <button onclick="openInCoriolis()">Open in Coriolis</button>
+  <p id="coriolisStatus"></p>
+</div>
+
+<!-- BASIC STATS -->
+<div class="section">
+  <h2>Build Stats</h2>
+
+  <label>Ship Name</label>
+  <input id="shipName" />
+
+  <label>Unladen Jump Range (ly)</label>
+  <input id="jumpUnladen" />
+
+  <label>Laden Jump Range (ly)</label>
+  <input id="jumpLaden" />
+
+  <label>Power Available (MW)</label>
+  <input id="powerAvailable" />
+
+  <label>Power Used (Deployed) (MW)</label>
+  <input id="powerDeployed" />
+
+  <label>Heat Capacity</label>
+  <input id="heat" />
+
+  <label>Shield Strength (MJ)</label>
+  <input id="shieldMJ" />
+
+  <label>Shield Resistances (Therm, Kin, Expl)</label>
+  <input id="shieldRes" />
+
+  <label>Hull HP</label>
+  <input id="hullHP" />
+
+  <label>Hull Resistances (Therm, Kin, Expl)</label>
+  <input id="hullRes" />
+
+  <label>Distributor (EPS, HPS)</label>
+  <input id="dist" />
+</div>
+
+<!-- ANALYSIS -->
+<div class="section">
+  <h2>Analysis</h2>
+  <button onclick="analyseBuild()">Run Analysis</button>
+  <div id="result" class="result"></div>
+</div>
+
+<script>
+let coriolisRef = null;
+
+/* ---------------------------
+   IMPORT CORIOLIS JSON
+---------------------------- */
+function importCoriolis() {
+  let raw = document.getElementById('coriolisJson').value.trim();
+  if (!raw) {
+    document.getElementById('coriolisStatus').textContent = "No JSON pasted.";
+    return;
+  }
+
+  let data;
+  try {
+    data = JSON.parse(raw);
+  } catch (e) {
+    document.getElementById('coriolisStatus').textContent = "Invalid JSON.";
+    return;
+  }
+
+  if (data.references && data.references.length > 0) {
+    coriolisRef = data.references[0];
+  } else {
+    document.getElementById('coriolisStatus').textContent = "JSON missing Coriolis reference.";
+    return;
+  }
+
+  const s = data.stats || {};
+
+  document.getElementById('shipName').value = data.ship || "";
+  document.getElementById('jumpUnladen').value = s.unladenRange || "";
+  document.getElementById('jumpLaden').value = s.ladenRange || "";
+  document.getElementById('powerAvailable').value = s.powerAvailable || "";
+  document.getElementById('powerDeployed').value = s.powerDeployed || "";
+  document.getElementById('heat').value = s.heatCapacity || "";
+
+  document.getElementById('shieldMJ').value = s.shield || "";
+  document.getElementById('shieldRes').value =
+    `${(s.shieldThermRes*100)||0}, ${(s.shieldKinRes*100)||0}, ${(s.shieldExplRes*100)||0}`;
+
+  document.getElementById('hullHP').value = s.armour || "";
+  document.getElementById('hullRes').value =
+    `${(s.hullThermRes*100)||0}, ${(s.hullKinRes*100)||0}, ${(s.hullExplRes*100)||0}`;
+
+  document.getElementById('dist').value =
+    `${s.totalEps||0}, ${s.totalHps||0}`;
+
+  document.getElementById('coriolisStatus').textContent = "Build loaded successfully.";
+}
+
+/* ---------------------------
+   OPEN EXACT BUILD IN CORIOLIS
+---------------------------- */
+function openInCoriolis() {
+  if (!coriolisRef) {
+    alert("No build loaded.");
+    return;
+  }
+
+  const url = `https://coriolis.io/outfit/${coriolisRef.shipId}?code=${coriolisRef.code}&bn=${encodeURIComponent(coriolisRef.name || "Build")}`;
+  window.open(url, "_blank");
+}
+
+/* ---------------------------
+   ANALYSIS
+---------------------------- */
+function tag(t) { return `[${t}]`; }
+
+function analyseBuild() {
+  const ship = document.getElementById('shipName').value;
+  const jumpU = parseFloat(document.getElementById('jumpUnladen').value) || 0;
+  const jumpL = parseFloat(document.getElementById('jumpLaden').value) || 0;
+  const pA = parseFloat(document.getElementById('powerAvailable').value) || 0;
+  const pD = parseFloat(document.getElementById('powerDeployed').value) || 0;
+  const heat = parseFloat(document.getElementById('heat').value) || 0;
+
+  const shield = parseFloat(document.getElementById('shieldMJ').value) || 0;
+  const shieldRes = document.getElementById('shieldRes').value.split(',').map(x => parseFloat(x.trim())||0);
+
+  const hull = parseFloat(document.getElementById('hullHP').value) || 0;
+  const hullRes = document.getElementById('hullRes').value.split(',').map(x => parseFloat(x.trim())||0);
+
+  const dist = document.getElementById('dist').value.split(',').map(x => parseFloat(x.trim())||0);
+
+  let out = `Ship: ${ship}\n\n`;
+
+  if (pA > 0) {
+    const ratio = pD / pA;
+    if (ratio < 0.9) out += tag("OK") + ` Power: ${pD}/${pA} MW\n`;
+    else if (ratio <= 1.0) out += tag("WARN") + ` Power: ${pD}/${pA} MW (tight)\n`;
+    else out += tag("BAD") + ` Power: ${pD}/${pA} MW (overloaded)\n`;
+  }
+
+  if (heat > 0) {
+    if (heat < 60) out += tag("OK") + ` Heat: ${heat}\n`;
+    else if (heat <= 80) out += tag("WARN") + ` Heat: ${heat}\n`;
+    else out += tag("BAD") + ` Heat: ${heat}\n`;
+  }
+
+  if (jumpU > 0) {
+    out += `Jump Range: ${jumpU} unladen, ${jumpL} laden\n`;
+  }
+
+  if (shield > 0) {
+    const avg = (shieldRes[0]+shieldRes[1]+shieldRes[2])/3/100;
+    const eff = shield/(1-avg);
+    out += `Shield: ${shield} MJ → ~${eff.toFixed(0)} effective\n`;
+  }
+
+  if (hull > 0) {
+    const avg = (hullRes[0]+hullRes[1]+hullRes[2])/3/100;
+    const eff = hull/(1-avg);
+    out += `Hull: ${hull} HP → ~${eff.toFixed(0)} effective\n`;
+  }
+
+  if (dist.length === 2) {
+    const [eps, hps] = dist;
+    if (eps <= hps) out += tag("OK") + ` Distributor: EPS ${eps}, HPS ${hps}\n`;
+    else out += tag("WARN") + ` Distributor: EPS ${eps}, HPS ${hps}\n`;
+  }
+
+  document.getElementById('result').textContent = out;
+}
+</script>
+
+</body>
+</html>
