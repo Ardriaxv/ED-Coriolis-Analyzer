@@ -40,11 +40,8 @@ The tool reads the JSON’s internal `code=` and `shipId`, ensuring Coriolis ope
 - All modules  
 - All engineering  
 - All internals  
-- All stats  
-
-No more blank ships.  
-No more 8 LY stock Pythons.
-
+- All stats
+  
 
 ### ** Build Analysis**
 The tool evaluates:
