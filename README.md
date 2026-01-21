@@ -9,7 +9,7 @@ Designed for simplicity, accuracy, and speed  no backend, no installs, no depend
 This tool lets you:
 
 - Paste a Coriolis JSON export  
-- Auto‑fill all ship stats instantly  
+- Auto fill all ship stats instantly  
 - Run a full build analysis  
 - Open the exact same build back in Coriolis  
 - Avoid the “stock ship” issue caused by missing build codes  
@@ -61,14 +61,14 @@ Results are displayed in a clean, readable format.
 
 1. Open the HTML file in any modern browser  
 2. Export your build from Coriolis.io  
-   - Click **Export → JSON**  
+   Click **Export → JSON**  
 3. Paste the JSON into the text box  
 4. Click **Add New Build**  
-   - All stats auto‑fill  
+   All stats auto fill  
 5. Click **Run Analysis**  
-   - View your build evaluation  
+   View your build evaluation  
 6. Click **Open in Coriolis**  
-   - Loads the exact build in Coriolis  
+   Loads the exact build in Coriolis  
 
 
 
