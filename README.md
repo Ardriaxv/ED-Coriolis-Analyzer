@@ -68,7 +68,7 @@ Results are displayed in a clean, readable format.
    All stats auto fill  
 5. Click **Run Analysis**  
    View your build evaluation  
-6. Click **Open in Coriolis**  
+6. Click **Rebuild in Coriolis**  
    Loads the exact build in Coriolis  
 
 
