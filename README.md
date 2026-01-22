@@ -1,3 +1,4 @@
+
 [![View Site](https://img.shields.io/badge/Live_Site-Visit-blue)](https://ardriaxv.github.io/ED-Coriolis-Analyzer/)
 
 
@@ -97,7 +98,6 @@ This guarantees accurate analysis.
 - Runs entirely in the browser  
 
 © 2026 D. Hughson. All rights reserved.
-
 
 
 
