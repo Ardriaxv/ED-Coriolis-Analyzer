@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ED Materials + Bearing Console</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-deep: #040608;
+  --bg-panel: #0a0d12;
+  --bg-card: #0e1117;
+  --bg-input: #12161e;
+  --amber: #FF9D00;
+  --amber-dim: rgba(255, 157, 0, 0.08);
+  --amber-glow: rgba(255, 157, 0, 0.15);
+  --amber-bright: #FFB940;
+  --cyan: #4cc9f0;
+  --cyan-dim: rgba(76, 201, 240, 0.1);
+  --text-primary: #e8e6e3;
+  --text-secondary: #8a8d93;
+  --text-dim: #555860;
+  --border: rgba(255, 157, 0, 0.08);
+  --border-hover: rgba(255, 157, 0, 0.25);
+  --radius: 8px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== ANIMATED STARFIELD BACKGROUND ===== */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background:
+    radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.15), transparent),
+    radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.1), transparent),
+    radial-gradient(1px 1px at 60% 20%, rgba(255,255,255,0.12), transparent),
+    radial-gradient(1px 1px at 80% 80%, rgba(255,255,255,0.08), transparent),
+    radial-gradient(1.5px 1.5px at 10% 60%, rgba(255,157,0,0.08), transparent),
+    radial-gradient(1.5px 1.5px at 90% 40%, rgba(76,201,240,0.06), transparent);
+  background-size: 250px 250px, 300px 300px, 200px 200px, 350px 350px, 400px 400px, 450px 450px;
+  animation: drift 120s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes drift {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-250px); }
+}
+
+/* ===== NAV ===== */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(4, 6, 8, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+}
+
+.nav-brand {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  color: var(--amber);
+  text-transform: uppercase;
+}
+
+.nav-links { display: flex; gap: 4px; }
+
+nav a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+nav a:hover {
+  color: var(--amber);
+  background: var(--amber-dim);
+}
+
+nav a.active {
+  color: var(--amber);
+  background: var(--amber-dim);
+}
+
+/* ===== LAYOUT ===== */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  z-index: 1;
+}
+
+section {
+  padding: 60px 0 80px;
+}
+
+/* ===== SECTION HEADERS ===== */
+.section-header {
+  margin-bottom: 40px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--amber);
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-bottom: 8px;
+}
+
+.section-title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 800;
+  font-size: clamp(22px, 4vw, 32px);
+  color: var(--text-primary);
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+}
+
+.section-title span {
+  color: var(--amber);
+}
+
+/* ===== INFO TEXT ===== */
+.info-block {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 32px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.info-block strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.info-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--cyan-dim);
+  border: 1px solid rgba(76, 201, 240, 0.15);
+  border-radius: 6px;
+  padding: 10px 16px;
+  margin: 16px 0;
+  font-size: 13px;
+  color: var(--cyan);
+}
+
+.info-note::before {
+  content: '◆';
+  font-size: 8px;
+}
+
+/* ===== TABLES ===== */
+.table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 32px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+thead th {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--amber);
+  background: rgba(255, 157, 0, 0.04);
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.02);
+  color: var(--text-secondary);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+tbody tr {
+  transition: all 0.2s ease;
+}
+
+tbody tr:hover {
+  background: rgba(255, 157, 0, 0.03);
+}
+
+tbody tr:hover td {
+  color: var(--text-primary);
+}
+
+td.material-name {
+  color: var(--amber-bright);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+td .coords {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 0.03em;
+}
+
+tbody tr:hover td .coords {
+  color: var(--text-secondary);
+}
+
+/* ===== SPECIAL TABLE - Bug Killer ===== */
+.special-table {
+  border: 1px solid rgba(255, 157, 0, 0.12);
+}
+
+.special-table .table-header-row td {
+  background: rgba(255, 157, 0, 0.06);
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--amber);
+  text-align: center;
+  padding: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.special-table .materials-row td {
+  text-align: center;
+  padding: 14px 10px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.special-table .materials-row td .grade {
+  display: block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+/* ===== ORDERED/UNORDERED LISTS ===== */
+.content-list {
+  list-style: none;
+  margin: 16px 0 32px;
+  padding: 0;
+}
+
+.content-list li {
+  padding: 8px 0 8px 24px;
+  position: relative;
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+.content-list li::before {
+  content: '›';
+  position: absolute;
+  left: 4px;
+  color: var(--amber);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.content-list.numbered { counter-reset: step; }
+
+.content-list.numbered li::before {
+  counter-increment: step;
+  content: counter(step);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--amber-dim);
+  border: 1px solid var(--amber-glow);
+  border-radius: 50%;
+  left: 0;
+  top: 10px;
+}
+
+/* ===== SUB SECTION DIVIDER ===== */
+.sub-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 48px 0 32px;
+}
+
+.sub-divider::before,
+.sub-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
+
+.sub-divider span {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--amber);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ===== LINK STYLES ===== */
+a.map-link {
+  color: var(--cyan);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(76, 201, 240, 0.3);
+  transition: all 0.2s;
+}
+
+a.map-link:hover {
+  color: #7dd8f5;
+  border-color: var(--cyan);
+}
+
+/* ============================================ */
+/* ===== BEARING CONSOLE ===== */
+/* ============================================ */
+
+.console {
+  max-width: 520px;
+  margin: 0 auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle top glow line */
+.console::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--amber), transparent);
+}
+
+.console-title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.25em;
+  color: var(--amber);
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.input-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.input-wrapper label {
+  display: block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.console input[type="number"] {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.25s ease;
+  -moz-appearance: textfield;
+}
+
+.console input[type="number"]::-webkit-inner-spin-button,
+.console input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.console input[type="number"]:focus {
+  border-color: var(--amber);
+  box-shadow: 0 0 0 3px var(--amber-dim), 0 0 20px var(--amber-dim);
+}
+
+.console input[type="number"]::placeholder {
+  color: var(--text-dim);
+  font-size: 12px;
+}
+
+.btn-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.console button {
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: none;
+}
+
+.btn-calc {
+  background: linear-gradient(135deg, var(--amber), #e08800);
+  color: #0d0e12;
+  box-shadow: 0 4px 20px rgba(255, 157, 0, 0.2);
+}
+
+.btn-calc:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 30px rgba(255, 157, 0, 0.35);
+}
+
+.btn-calc:active {
+  transform: translateY(0);
+}
+
+.btn-reset {
+  background: transparent;
+  border: 1px solid var(--border) !important;
+  color: var(--text-secondary);
+}
+
+.btn-reset:hover {
+  border-color: var(--border-hover) !important;
+  color: var(--text-primary);
+  background: var(--amber-dim);
+}
+
+#narrative {
+  margin-top: 16px;
+  text-align: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--amber);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+#narrative.visible {
+  opacity: 1;
+  animation: pulse-text 0.9s ease-in-out;
+}
+
+@keyframes pulse-text {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+#result {
+  margin-top: 20px;
+  padding: 18px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 15px;
+  text-align: center;
+  color: var(--text-primary);
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#result:empty {
+  min-height: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.result-label {
+  color: var(--amber);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.result-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.canvas-wrapper {
+  margin-top: 24px;
+  text-align: center;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+#vectorCanvas {
+  background: var(--bg-input);
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  text-align: center;
+  padding: 40px 24px;
+  border-top: 1px solid var(--border);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  nav { padding: 0 16px; }
+  .nav-brand { font-size: 11px; }
+  nav a { font-size: 12px; padding: 6px 10px; }
+  .container { padding: 0 16px; }
+  section { padding: 40px 0 60px; }
+  .section-title { font-size: 22px; }
+  .console { padding: 24px 20px; }
+  .input-group { grid-template-columns: 1fr; }
+  thead th, tbody td { padding: 10px 12px; font-size: 12px; }
+  td .coords { font-size: 11px; }
+}
+
+@media (max-width: 480px) {
+  .nav-brand { display: none; }
+  .btn-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <div class="nav-brand">ED Console</div>
+  <div class="nav-links">
+    <a href="#materials" class="active" onclick="setActiveNav(this)">Materials</a>
+    <a href="#bearing" onclick="setActiveNav(this)">Bearing</a>
+  </div>
+</nav>
+
+<!-- ============================================================= -->
+<!-- =================== MATERIALS GUIDE ========================== -->
+<!-- ============================================================= -->
+
+<section id="materials">
+<div class="container">
+
+  <div class="section-header animate-in">
+    <div class="section-tag">// Commander Reference</div>
+    <h1 class="section-title">ED Materials — <span>Raw Materials Guide</span></h1>
+  </div>
+
+  <div class="info-block animate-in">
+ A CMDR is still able to source materials; Braodly, however, biological markers do not work now so i added in a co ordinated sytem if you find it helpful. Specific planetary coordinates have an abundance of crystalline shards that drop these raw specific materials.
+    <strong>You may need to relog on these sites to regenerate these clusters of raw materials as planet biological generation is RNG based.</strong>
+  </div>
+
+  <!-- === TABLE 1: Crystal Shard Sites === -->
+  <div class="table-wrapper animate-in">
+    <table>
+      <thead>
+        <tr>
+          <th>Raw Material</th>
+          <th>System</th>
+          <th>Body</th>
+          <th>Planetary Coordinates (Lat, Long)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="material-name">Antimony</td>
+          <td>Outotz LS-K d8-3</td>
+          <td>B 5 C</td>
+          <td><span class="coords">(-66.01, 83.66) (-62.49, 80.24)</span></td>
+        </tr>
+        <tr>
+          <td class="material-name">Yttrium</td>
+          <td>Outotz LS-K d8-3</td>
+          <td>B 5 A</td>
+          <td><span class="coords">(16.79, -40.13) (-1.83, -145.69) (-1.92, -145.70)</span></td>
+        </tr>
+        <tr>
+          <td class="material-name">Polonium</td>
+          <td>HIP 36601</td>
+          <td>C 1 A</td>
+          <td><span class="coords">(-31.03, 14.85) (-57.46, 126.95)</span></td>
+        </tr>
+        <tr>
+          <td class="material-name">Ruthenium</td>
+          <td>HIP 36601</td>
+          <td>C 1 D</td>
+          <td><span class="coords">(7.24, -37.66) (10.70, -35.75) (-51.26, 14.73)</span></td>
+        </tr>
+        <tr>
+          <td class="material-name">Technetium</td>
+          <td>HIP 36601</td>
+          <td>C 5 A</td>
+          <td><span class="coords">(6.82, -23.81) (6.87, -22.99) (3.55, -55.18) @40° front</span></td>
+        </tr>
+        <tr>
+          <td class="material-name">Tellurium</td>
+          <td>HIP 36601</td>
+          <td>C 3 B</td>
+          <td><span class="coords">(36.88, -75.51) (-17.68, -55.18) (67.0097, 131.7303)@40° front</span></td>
+        </tr>
+        <tr>
+          <td class="material-name">Selenium</td>
+          <td>Kappa-1 Volantis</td>
+          <td>B 3 F A</td>
+          <td><span class="coords">(-50.1757, -112.2340) (-50.2105, -111.9912)</span></td>
+        </tr>
+        <tr>
+          <td class="material-name">Selenium</td>
+          <td>HR 3230</td>
+          <td>3 A A</td>
+          <td><span class="coords">(45.66, -30.49) (33.0879, -116.9039)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-note">Polonium is used only for FSD Injections, which can be cross-traded for Selenium.</div>
+
+  <!-- === TABLE 2: Horizons Recommended Sites === -->
+  <div class="info-block animate-in" style="margin-top: 32px;">
+    Raw materials can be collected from surface prospecting rocks on surfaces of planets. However the most efficient method is to <strong>collect all high-grade raw materials and trade them down</strong>.
+  </div>
+
+  <div class="table-wrapper animate-in">
+    <table>
+      <thead>
+        <tr>
+          <th>Raw Material</th>
+          <th>System</th>
+          <th>Body</th>
+          <th>Site</th>
+          <th>Recommended Sites (Horizons 3.8)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="material-name">Antimony</td>
+          <td>Outotz LS-K d8-3</td>
+          <td>B 5 C</td>
+          <td>Biological</td>
+          <td>Recommend Biological Site 1 and 3</td>
+        </tr>
+        <tr>
+          <td class="material-name">Yttrium</td>
+          <td>Outotz LS-K d8-3</td>
+          <td>B 5 A</td>
+          <td>Biological</td>
+          <td>Recommend Biological Site 1, 6 and 19</td>
+        </tr>
+        <tr>
+          <td class="material-name">Polonium</td>
+          <td>HIP 36601</td>
+          <td>C 1 A</td>
+          <td>Biological</td>
+          <td>Recommend Biological Site 1, 3 and 5</td>
+        </tr>
+        <tr>
+          <td class="material-name">Ruthenium</td>
+          <td>HIP 36601</td>
+          <td>C 1 D</td>
+          <td>Biological</td>
+          <td>Recommend Biological Site 1, 4 and 5</td>
+        </tr>
+        <tr>
+          <td class="material-name">Technetium</td>
+          <td>HIP 36601</td>
+          <td>C 5 A</td>
+          <td>Biological</td>
+          <td>Recommend Biological Site 2, 4 and 6</td>
+        </tr>
+        <tr>
+          <td class="material-name">Tellurium</td>
+          <td>HIP 36601</td>
+          <td>C 3 B</td>
+          <td>Biological</td>
+          <td>Recommend Biological Site 2, 3 and 4</td>
+        </tr>
+        <tr>
+          <td class="material-name">Selenium</td>
+          <td>LHS 417</td>
+          <td>9 E A</td>
+          <td>Geological</td>
+          <td>Recommend Geological Site (24.9533, –6.6804) not a good site </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-note">Selenium can also be obtained from lasering in Osmium and Bromellite hotspots.</div>
+
+  <!-- === BUG KILLER === -->
+  <div class="sub-divider"><span>Bug Killer — Crashed Anaconda</span></div>
+
+  <div class="info-block animate-in">
+    Another great way of collecting higher-end raw materials is to farm materials at a crashed site in <strong>HIP 16613</strong> on planetary body <strong>1 A</strong> named the "Bug Killer" where there exists a crashed Anaconda with Cargo Racks scattered around. You can find some high-grade Raw Materials by shooting and destroying these Cargo Racks.
+  </div>
+
+  <div class="table-wrapper special-table animate-in">
+    <table>
+      <tbody>
+        <tr class="table-header-row">
+          <td colspan="5">HIP 16613 · Planet 1 A · (-11.0093, -95.6755)</td>
+        </tr>
+        <tr class="materials-row">
+          <td>Antimony <span class="grade">G4</span></td>
+          <td>Ruthenium <span class="grade">G4</span></td>
+          <td>Technetium <span class="grade">G4</span></td>
+          <td>Tellurium <span class="grade">G4</span></td>
+          <td>Tungsten <span class="grade">G3</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-block animate-in">
+    You might get paid a friendly visit by a <strong>Thargoid Interceptor</strong>, but do not worry, you are safe from being shot. The Interceptor is only there to survey the area.
+  </div>
+
+  <ul class="content-list numbered">
+    <li>Shoot and Collect the Raw Materials from these Cargo Racks</li>
+    <li>Menu Log to Reset the Materials</li>
+  </ul>
+
+  <!-- === ALTERNATIVE SITES (Near Sol) === -->
+  <div class="sub-divider"><span>Alternative Sites — Near Sol</span></div>
+
+  <div class="info-block animate-in">
+    There are 6 good Raw Materials collection site alternatives to the Crystal Shards. They are located only around <strong>300–400 Light Years</strong> away from Sol, in the direction of the Guardian Ruins.
+  </div>
+
+  <div class="table-wrapper animate-in">
+    <table>
+      <thead>
+        <tr>
+          <th>Raw Material</th>
+          <th>System</th>
+          <th>Body</th>
+          <th>Planetary Coordinates (Lat, Long)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="material-name">Antimony</td>
+          <td>V518 Carinae</td>
+          <td>2 A</td>
+          <td><span class="coords">(13.7416, -91.2381)</span></td>
+        </tr>
+        <tr>
+          <td class="material-name">Yttrium</td>
+          <td>Synuefe AN-H d11-101</td>
+          <td>AB 1 C</td>
+          <td><span class="coords">(-50.2389, 103.7574)</span></td>
+        </tr>
+        <tr>
+          <td class="material-name">Polonium</td>
+          <td>Synuefe BY-F d12-39</td>
+          <td>A 2</td>
+          <td><span class="coords">(36.3907, 46.3248)</span></td>
+        </tr>
+        <tr>
+          <td class="material-name">Ruthenium</td>
+          <td>IC 2602 Sector BV-X b1-6</td>
+          <td>1</td>
+          <td><span class="coords">(21.9716, 82.7768)</span></td>
+        </tr>
+        <tr>
+          <td class="material-name">Technetium</td>
+          <td>Synuefe LX-G b44-11</td>
+          <td>B 2</td>
+          <td><span class="coords">(20.4375, -154.1866)</span></td>
+        </tr>
+        <tr>
+          <td class="material-name">Tellurium</td>
+          <td>Kappa-1 Volantis</td>
+          <td>B 7 C A</td>
+          <td><span class="coords">(21.3445, 36.3395)</span></td>
+        </tr>
+        <tr>
+          <td class="material-name">Selenium</td>
+          <td>HR 3230</td>
+          <td>3 A A</td>
+          <td><span class="coords">(46.6834, -30.3193) (33.0879, -116.9039)</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ul class="content-list">
+    <li>All G4 Raw Materials <strong>except Selenium</strong> can be found from dislodging <strong>Phloem Excretions</strong>.</li>
+    <li>Selenium can be found by dislodging <strong>Polyporus Growth</strong>.</li>
+    <li>Other G2 rarity materials can be found by dislodging <strong>Polyporus Growth</strong>.</li>
+  </ul>
+
+</div>
+</section>
+
+<!-- ============================================================= -->
+<!-- =================== BEARING CONSOLE ========================== -->
+<!-- ============================================================= -->
+
+<section id="bearing">
+<div class="container">
+
+  <div class="section-header animate-in">
+    <div class="section-tag">// Navigation Tool</div>
+    <h1 class="section-title">Bearing & <span>Distance Console</span></h1>
+  </div>
+
+  <div class="console animate-in">
+    <div class="console-title">◈ Bearing & Distance Calculator ◈</div>
+
+    <div class="input-group">
+      <div class="input-wrapper">
+        <label>Start Latitude</label>
+        <input id="xStart" type="number" step="any" placeholder="e.g. -66.01">
+      </div>
+      <div class="input-wrapper">
+        <label>Start Longitude</label>
+        <input id="yStart" type="number" step="any" placeholder="e.g. 83.66">
+      </div>
+    </div>
+
+    <div class="input-group">
+      <div class="input-wrapper">
+        <label>Dest Latitude</label>
+        <input id="xDest" type="number" step="any" placeholder="e.g. -62.49">
+      </div>
+      <div class="input-wrapper">
+        <label>Dest Longitude</label>
+        <input id="yDest" type="number" step="any" placeholder="e.g. 80.24">
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-calc" onclick="calculateBearing()">Calculate</button>
+      <button class="btn-reset" onclick="resetFields()">Reset</button>
+    </div>
+
+    <div id="narrative">Processing Navigation Data...</div>
+    <div id="result"></div>
+
+    <div class="canvas-wrapper" id="canvasWrapper" style="display:none;">
+      <canvas id="vectorCanvas" width="400" height="400"></canvas>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<footer>
+  ED Materials + Bearing Console Reference Tool Created By CMDR Ardriax Info by Another Cmdr o7 
+</footer>
+
+<!-- ===== SCRIPTS ===== -->
+<script>
+// ===== NAV HIGHLIGHT =====
+function setActiveNav(el) {
+  document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// Highlight nav on scroll
+window.addEventListener('scroll', function() {
+  var sections = document.querySelectorAll('section');
+  var navLinks = document.querySelectorAll('nav a');
+  var scrollPos = window.scrollY + 100;
+
+  sections.forEach(function(section, i) {
+    if (scrollPos >= section.offsetTop && scrollPos < section.offsetTop + section.offsetHeight) {
+      navLinks.forEach(function(a) { a.classList.remove('active'); });
+      navLinks[i].classList.add('active');
+    }
+  });
+});
+
+// ===== BEARING CALCULATOR =====
+// Uses proper compass bearing: 0° = North, 90° = East, etc.
+// atan2(deltaLong, deltaLat) gives bearing from north, clockwise
+function calculateBearing() {
+  var latStart = parseFloat(document.getElementById("xStart").value);
+  var lonStart = parseFloat(document.getElementById("yStart").value);
+  var latEnd   = parseFloat(document.getElementById("xDest").value);
+  var lonEnd   = parseFloat(document.getElementById("yDest").value);
+
+  if ([latStart, lonStart, latEnd, lonEnd].some(isNaN)) {
+    document.getElementById("result").innerHTML =
+      '<span style="color:#ff6b6b; font-size: 13px;">⚠ Please enter all four coordinates.</span>';
+    return;
+  }
+
+  var deltaLat = latEnd - latStart;
+  var deltaLon = lonEnd - lonStart;
+
+  // Compass bearing: 0°=N, 90°=E, 180°=S, 270°=W
+  var bearing = Math.atan2(deltaLon, deltaLat) * (180 / Math.PI);
+  if (bearing < 0) bearing += 360;
+  bearing = Math.round(bearing);
+
+  // Approximate distance (flat Euclidean for planetary surfaces in ED)
+  var distance = Math.sqrt(deltaLat * deltaLat + deltaLon * deltaLon).toFixed(2);
+
+  // Cardinal direction label
+  var cardinals = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+  var cardinal = cardinals[Math.round(bearing / 22.5) % 16];
+
+  var narr = document.getElementById("narrative");
+  narr.classList.add('visible');
+
+  setTimeout(function() {
+    narr.classList.remove('visible');
+    document.getElementById("result").innerHTML =
+      '<div style="display: flex; justify-content: center; gap: 40px;">' +
+        '<div><div class="result-label">Heading</div><div class="result-value">' + bearing + '° <span style="font-size:13px; color:var(--text-secondary)">' + cardinal + '</span></div></div>' +
+        '<div><div class="result-label">Distance</div><div class="result-value">' + distance + ' <span style="font-size:13px; color:var(--text-secondary)">units</span></div></div>' +
+      '</div>';
+
+    document.getElementById("canvasWrapper").style.display = "block";
+    drawVector(deltaLon, deltaLat);
+  }, 900);
+}
+
+function resetFields() {
+  document.getElementById("xStart").value = "";
+  document.getElementById("yStart").value = "";
+  document.getElementById("xDest").value = "";
+  document.getElementById("yDest").value = "";
+  document.getElementById("result").innerHTML = "";
+  document.getElementById("canvasWrapper").style.display = "none";
+
+  var ctx = document.getElementById("vectorCanvas").getContext("2d");
+  ctx.clearRect(0, 0, 400, 400);
+}
+
+function drawVector(dLon, dLat) {
+  var canvas = document.getElementById("vectorCanvas");
+  var ctx = canvas.getContext("2d");
+  var W = canvas.width, H = canvas.height;
+
+  ctx.clearRect(0, 0, W, H);
+
+  var cx = W / 2, cy = H / 2;
+
+  // Draw grid
+  ctx.strokeStyle = "rgba(255,157,0,0.06)";
+  ctx.lineWidth = 1;
+  for (var i = 0; i <= W; i += 40) {
+    ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, H); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(W, i); ctx.stroke();
+  }
+
+  // Draw compass crosshair
+  ctx.strokeStyle = "rgba(255,157,0,0.12)";
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath(); ctx.moveTo(cx, 10); ctx.lineTo(cx, H - 10); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(10, cy); ctx.lineTo(W - 10, cy); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Compass labels
+  ctx.fillStyle = "rgba(255,157,0,0.35)";
+  ctx.font = "11px 'Orbitron', sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("N", cx, 22);
+  ctx.fillText("S", cx, H - 12);
+  ctx.fillText("E", W - 14, cy + 4);
+  ctx.fillText("W", 14, cy + 4);
+
+  // Scale the vector to fit the canvas nicely
+  var mag = Math.sqrt(dLon * dLon + dLat * dLat);
+  var maxLen = (W / 2) - 40;
+  var scale = mag > 0 ? Math.min(maxLen / mag, 15) : 10;
+
+  // In canvas: X = East (+dLon right), Y = North (+dLat up, so subtract)
+  var endX = cx + dLon * scale;
+  var endY = cy - dLat * scale;
+
+  // Draw origin dot
+  ctx.beginPath();
+  ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(255,157,0,0.5)";
+  ctx.fill();
+
+  // Draw vector line with glow
+  ctx.shadowColor = "rgba(255,157,0,0.3)";
+  ctx.shadowBlur = 8;
+  ctx.strokeStyle = "#FF9D00";
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(endX, endY);
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Draw arrowhead
+  var angle = Math.atan2(cy - endY, endX - cx);
+  var arrowSize = 14;
+
+  ctx.beginPath();
+  ctx.moveTo(endX, endY);
+  ctx.lineTo(endX - arrowSize * Math.cos(angle - Math.PI / 6),
+             endY + arrowSize * Math.sin(angle - Math.PI / 6));
+  ctx.lineTo(endX - arrowSize * Math.cos(angle + Math.PI / 6),
+             endY + arrowSize * Math.sin(angle + Math.PI / 6));
+  ctx.closePath();
+  ctx.fillStyle = "#FF9D00";
+  ctx.fill();
+
+  // Draw bearing arc
+  ctx.strokeStyle = "rgba(255,157,0,0.25)";
+  ctx.lineWidth = 1;
+  var bearingRad = Math.atan2(dLon, dLat);
+  ctx.beginPath();
+  // Arc from North (top = -PI/2 in canvas) clockwise to bearing
+  ctx.arc(cx, cy, 30, -Math.PI/2, -Math.PI/2 + bearingRad, false);
+  ctx.stroke();
+}
+</script>
+
+</body>
+</html>
